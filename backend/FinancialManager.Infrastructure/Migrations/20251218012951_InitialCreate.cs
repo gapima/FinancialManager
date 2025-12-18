@@ -31,8 +31,8 @@ namespace FinancialManager.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    Age = table.Column<int>(type: "INTEGER", nullable: false)
+                    Nome = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    Idade = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

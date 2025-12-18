@@ -16,9 +16,9 @@ public class AppDbContext : DbContext
     {
         modelBuilder.Entity<Pessoa>(e =>
         {
-            e.ToTable("People");
-            e.Property(x => x.Name).IsRequired().HasMaxLength(200);
-            e.Property(x => x.Age).IsRequired();
+            e.ToTable("Pessoas");
+            e.Property(x => x.Nome).IsRequired().HasMaxLength(200);
+            e.Property(x => x.Idade).IsRequired();
         });
 
         modelBuilder.Entity<Category>(e =>

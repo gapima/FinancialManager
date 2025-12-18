@@ -1,6 +1,6 @@
-﻿namespace FinancialManager.Domain.Entities;
+﻿namespace FinancialManager.Api.DTOs.Pessoa;
 
-public class Pessoa
+public class PessoaResponseDto
 {
     public int Id { get; set; }
     public string Nome { get; set; } = string.Empty;
