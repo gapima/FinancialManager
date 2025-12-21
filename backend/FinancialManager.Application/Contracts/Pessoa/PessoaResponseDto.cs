@@ -1,6 +1,6 @@
 ﻿namespace FinancialManager.Application.Contracts.Pessoa;
 
-public class PessoaResponseDto
+public sealed class PessoaResponseDto
 {
     public int Id { get; set; }
     public string Nome { get; set; } = string.Empty;
