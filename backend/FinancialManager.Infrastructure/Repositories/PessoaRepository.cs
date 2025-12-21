@@ -1,4 +1,4 @@
-﻿using FinancialManager.Application.Abstractions.Pessoas;
+﻿using FinancialManager.Application.Abstractions.Repository;
 using FinancialManager.Domain.Entities;
 using FinancialManager.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;

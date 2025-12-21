@@ -1,6 +1,6 @@
-﻿namespace FinancialManager.Api.DTOs.Pessoa;
+﻿namespace FinancialManager.Application.Contracts.Pessoa;
 
-public class PessoaCreateDto
+public class PessoaUpdateDto
 {
     public string Nome { get; set; } = string.Empty;
     public int Idade { get; set; }

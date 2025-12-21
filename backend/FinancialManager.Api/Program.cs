@@ -1,4 +1,6 @@
-using FinancialManager.Application.Abstractions.Pessoas;
+using FinancialManager.Application.Abstractions.Repository;
+using FinancialManager.Application.Abstractions.Service;
+using FinancialManager.Application.Mappings;
 using FinancialManager.Application.Services;
 using FinancialManager.Infrastructure.Data;
 using FinancialManager.Infrastructure.Repositories;
@@ -18,6 +20,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Services
 builder.Services.AddScoped<IPessoaService, PessoaService>();
+builder.Services.AddAutoMapper(typeof(PessoaProfile).Assembly);
 
 // Repository
 builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();

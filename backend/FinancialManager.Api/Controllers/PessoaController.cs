@@ -1,9 +1,6 @@
-﻿using FinancialManager.Api.DTOs.Pessoa;
-using FinancialManager.Application.Abstractions.Pessoas;
-using FinancialManager.Domain.Entities;
-using FinancialManager.Infrastructure.Data;
+﻿using FinancialManager.Application.Abstractions.Service;
+using FinancialManager.Application.Contracts.Pessoa;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FinancialManager.Api.Controllers;
 
@@ -19,66 +16,42 @@ public class PessoaController : ControllerBase
     }
 
     [HttpGet]
+    [ProducesResponseType(typeof(List<PessoaResponseDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<PessoaResponseDto>>> GetAll(CancellationToken ct)
     {
         var pessoas = await _service.GetAllAsync(ct);
-
-        var dto = pessoas.Select(p => new PessoaResponseDto
-        {
-            Id = p.Id,
-            Nome = p.Nome,
-            Idade = p.Idade
-        }).ToList();
-
-        return Ok(dto);
+        return Ok(pessoas);
     }
 
     [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(PessoaResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PessoaResponseDto>> GetById(int id, CancellationToken ct)
     {
         var pessoa = await _service.GetByIdAsync(id, ct);
-        if (pessoa is null) return NotFound();
-
-        return Ok(new PessoaResponseDto
-        {
-            Id = pessoa.Id,
-            Nome = pessoa.Nome,
-            Idade = pessoa.Idade
-        });
+        return pessoa is null ? NotFound() : Ok(pessoa);
     }
 
     [HttpPost]
-    public async Task<ActionResult<PessoaResponseDto>> Create(PessoaCreateDto input, CancellationToken ct)
+    [ProducesResponseType(typeof(PessoaResponseDto), StatusCodes.Status201Created)]
+    public async Task<ActionResult<PessoaResponseDto>> Create([FromBody] PessoaCreateDto input, CancellationToken ct)
     {
-        var pessoa = new Pessoa
-        {
-            Nome = input.Nome,
-            Idade = input.Idade
-        };
-
-        var created = await _service.CreateAsync(pessoa, ct);
-
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, new PessoaResponseDto
-        {
-            Id = created.Id,
-            Nome = created.Nome,
-            Idade = created.Idade
-        });
+        var created = await _service.CreateAsync(input, ct);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, PessoaUpdateDto input, CancellationToken ct)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(int id, [FromBody] PessoaUpdateDto input, CancellationToken ct)
     {
-        var ok = await _service.UpdateAsync(id, new Pessoa
-        {
-            Nome = input.Nome,
-            Idade = input.Idade
-        }, ct);
-
+        var ok = await _service.UpdateAsync(id, input, ct);
         return ok ? NoContent() : NotFound();
     }
 
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
         var ok = await _service.DeleteAsync(id, ct);

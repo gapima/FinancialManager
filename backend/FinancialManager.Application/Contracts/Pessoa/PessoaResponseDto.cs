@@ -1,4 +1,4 @@
-﻿namespace FinancialManager.Api.DTOs.Pessoa;
+﻿namespace FinancialManager.Application.Contracts.Pessoa;
 
 public class PessoaResponseDto
 {

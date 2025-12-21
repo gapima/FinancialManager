@@ -1,6 +1,6 @@
 ﻿using FinancialManager.Domain.Entities;
 
-namespace FinancialManager.Application.Abstractions.Pessoas;
+namespace FinancialManager.Application.Abstractions.Repository;
 
 public interface IPessoaRepository
 {
