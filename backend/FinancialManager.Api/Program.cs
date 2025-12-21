@@ -21,10 +21,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Services
 builder.Services.AddScoped<IPessoaService, PessoaService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+// AutoMapper
 builder.Services.AddAutoMapper(typeof(PessoaProfile).Assembly);
 
 // Repository
 builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 var app = builder.Build();
 
