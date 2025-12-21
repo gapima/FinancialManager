@@ -1,3 +1,4 @@
+using FinancialManager.Api.Middlewares;
 using FinancialManager.Application.Abstractions.Repository;
 using FinancialManager.Application.Abstractions.Service;
 using FinancialManager.Application.Mappings;
@@ -27,6 +28,7 @@ builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
