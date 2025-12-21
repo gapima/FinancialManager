@@ -1,4 +1,5 @@
 ﻿using FinancialManager.Api.DTOs.Pessoa;
+using FinancialManager.Application.Abstractions.Pessoas;
 using FinancialManager.Domain.Entities;
 using FinancialManager.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -7,40 +8,36 @@ using Microsoft.EntityFrameworkCore;
 namespace FinancialManager.Api.Controllers;
 
 [ApiController]
-[Route("api/pessoa")]
+[Route("api/[controller]")]
 public class PessoaController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IPessoaService _service;
 
-    public PessoaController(AppDbContext context)
+    public PessoaController(IPessoaService service)
     {
-        _context = context;
+        _service = service;
     }
 
-    // GET /api/pessoa
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PessoaResponseDto>>> GetAll()
+    public async Task<ActionResult<List<PessoaResponseDto>>> GetAll(CancellationToken ct)
     {
-        var pessoas = await _context.Pessoas
-            .Select(p => new PessoaResponseDto
-            {
-                Id = p.Id,
-                Nome = p.Nome,
-                Idade = p.Idade
-            })
-            .ToListAsync();
+        var pessoas = await _service.GetAllAsync(ct);
 
-        return Ok(pessoas);
+        var dto = pessoas.Select(p => new PessoaResponseDto
+        {
+            Id = p.Id,
+            Nome = p.Nome,
+            Idade = p.Idade
+        }).ToList();
+
+        return Ok(dto);
     }
 
-    // GET /api/pessoa/{id}
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<PessoaResponseDto>> GetById(int id)
+    public async Task<ActionResult<PessoaResponseDto>> GetById(int id, CancellationToken ct)
     {
-        var pessoa = await _context.Pessoas.FindAsync(id);
-
-        if (pessoa is null)
-            return NotFound();
+        var pessoa = await _service.GetByIdAsync(id, ct);
+        if (pessoa is null) return NotFound();
 
         return Ok(new PessoaResponseDto
         {
@@ -50,59 +47,41 @@ public class PessoaController : ControllerBase
         });
     }
 
-    // POST /api/pessoa
     [HttpPost]
-    public async Task<ActionResult<PessoaResponseDto>> Create(PessoaCreateDto dto)
+    public async Task<ActionResult<PessoaResponseDto>> Create(PessoaCreateDto input, CancellationToken ct)
     {
         var pessoa = new Pessoa
         {
-            Nome = dto.Nome,
-            Idade = dto.Idade
+            Nome = input.Nome,
+            Idade = input.Idade
         };
 
-        _context.Pessoas.Add(pessoa);
-        await _context.SaveChangesAsync();
+        var created = await _service.CreateAsync(pessoa, ct);
 
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = pessoa.Id },
-            new PessoaResponseDto
-            {
-                Id = pessoa.Id,
-                Nome = pessoa.Nome,
-                Idade = pessoa.Idade
-            }
-        );
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, new PessoaResponseDto
+        {
+            Id = created.Id,
+            Nome = created.Nome,
+            Idade = created.Idade
+        });
     }
 
-    // PUT /api/pessoa/{id}
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, PessoaUpdateDto dto)
+    public async Task<IActionResult> Update(int id, PessoaUpdateDto input, CancellationToken ct)
     {
-        var pessoa = await _context.Pessoas.FindAsync(id);
+        var ok = await _service.UpdateAsync(id, new Pessoa
+        {
+            Nome = input.Nome,
+            Idade = input.Idade
+        }, ct);
 
-        if (pessoa is null)
-            return NotFound();
-
-        pessoa.Nome = dto.Nome;
-        pessoa.Idade = dto.Idade;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
+        return ok ? NoContent() : NotFound();
     }
 
-    // DELETE /api/pessoa/{id}
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
-        var pessoa = await _context.Pessoas.FindAsync(id);
-
-        if (pessoa is null)
-            return NotFound();
-
-        _context.Pessoas.Remove(pessoa);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        var ok = await _service.DeleteAsync(id, ct);
+        return ok ? NoContent() : NotFound();
     }
 }

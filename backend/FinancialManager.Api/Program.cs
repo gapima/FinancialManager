@@ -1,4 +1,7 @@
+using FinancialManager.Application.Abstractions.Pessoas;
+using FinancialManager.Application.Services;
 using FinancialManager.Infrastructure.Data;
+using FinancialManager.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +15,12 @@ builder.Services.AddSwaggerGen();
 // Db
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
+
+// Services
+builder.Services.AddScoped<IPessoaService, PessoaService>();
+
+// Repository
+builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
 
 var app = builder.Build();
 

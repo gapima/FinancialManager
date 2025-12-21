@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FinancialManager.Domain\FinancialManager.Domain.csproj" />
+    <ProjectReference Include="..\FinancialManager.Application\FinancialManager.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
