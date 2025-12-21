@@ -3,7 +3,7 @@ using FinancialManager.Application.Contracts.Category;
 using FinancialManager.Domain.Entities;
 using FinancialManager.Domain.Enums;
 
-namespace FinancialManager.Application.Mapping;
+namespace FinancialManager.Application.Mappings;
 
 public sealed class CategoryProfile : Profile
 {

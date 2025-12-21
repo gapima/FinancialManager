@@ -17,3 +17,4 @@ public sealed class PessoaProfile : Profile
             .ForMember(d => d.Nome, opt => opt.MapFrom(s => s.Nome.Trim()));
     }
 }
+    

@@ -5,6 +5,7 @@ using FinancialManager.Application.Mappings;
 using FinancialManager.Application.Services;
 using FinancialManager.Infrastructure.Data;
 using FinancialManager.Infrastructure.Repositories;
+using FinancialManager.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,13 +23,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Services
 builder.Services.AddScoped<IPessoaService, PessoaService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(PessoaProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(CategoryProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(TransactionProfile).Assembly);
 
 // Repository
 builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 
 var app = builder.Build();
 

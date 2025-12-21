@@ -26,7 +26,7 @@ namespace FinancialManager.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "People",
+                name: "Pessoas",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -36,7 +36,7 @@ namespace FinancialManager.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_People", x => x.Id);
+                    table.PrimaryKey("PK_Pessoas", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -62,9 +62,9 @@ namespace FinancialManager.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Transactions_People_PessoaId",
+                        name: "FK_Transactions_Pessoas_PessoaId",
                         column: x => x.PessoaId,
-                        principalTable: "People",
+                        principalTable: "Pessoas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -90,7 +90,7 @@ namespace FinancialManager.Infrastructure.Migrations
                 name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "People");
+                name: "Pessoas");
         }
     }
 }

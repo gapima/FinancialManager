@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinancialManager.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251218012951_InitialCreate")]
+    [Migration("20251221154445_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -55,7 +55,7 @@ namespace FinancialManager.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("People", (string)null);
+                    b.ToTable("Pessoas", (string)null);
                 });
 
             modelBuilder.Entity("FinancialManager.Domain.Entities.Transaction", b =>

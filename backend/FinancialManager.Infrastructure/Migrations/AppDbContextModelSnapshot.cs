@@ -52,7 +52,7 @@ namespace FinancialManager.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("People", (string)null);
+                    b.ToTable("Pessoas", (string)null);
                 });
 
             modelBuilder.Entity("FinancialManager.Domain.Entities.Transaction", b =>
