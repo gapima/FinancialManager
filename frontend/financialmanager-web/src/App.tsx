@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./components/Layout/AppLayout";
 import DashboardPage from "./pages/Dashboard/DashboardPage";
-import PessoasPage from "./pages/PessoasPage";
+import PessoasPage from "./pages/pessoas/PessoasPage";
 
 export default function App() {
   return (

@@ -4,8 +4,8 @@ import {
   listarPessoas,
   deletarPessoa,
   type PessoaResponseDto,
-} from "../app/api/pessoasApi";
-import PessoaFormModal from "../components/PessoaFormModal";
+} from "../../api/pessoasApi";
+import PessoaFormModal from "../../components/pessoa/PessoaFormModal";
 
 export default function PessoasPage() {
   const [search, setSearch] = useState("");

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import Modal from "./ModalPessoa";
+import Modal from "../Modal/BaseModal";
 import {
   criarPessoa,
   updatePessoa,
@@ -7,7 +7,7 @@ import {
   type PessoaCreateDto,
   type PessoaResponseDto,
   type PessoaUpdateDto,
-} from "../app/api/pessoasApi";
+} from "../../api/pessoasApi";
 
 type Mode = "create" | "update";
 
