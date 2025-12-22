@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import "./PessoasPage.css";
-import { listarPessoas, type PessoaResponseDto } from "../app/api/pessoasApi";
+import {
+  listarPessoas,
+  deletarPessoa,
+  type PessoaResponseDto,
+} from "../app/api/pessoasApi";
 import PessoaFormModal from "../components/PessoaFormModal";
 
 export default function PessoasPage() {
@@ -37,13 +41,26 @@ export default function PessoasPage() {
     return rows.filter((p) => p.nome.toLowerCase().includes(q));
   }, [rows, search]);
 
-  function onDeletePessoa(id: number) {
-    alert(`Em breve: DELETE pessoa id=${id}`);
-  }
-
   function openEdit(p: PessoaResponseDto) {
     setSelectedPessoa(p);
     setEditOpen(true);
+  }
+
+  async function onDeletePessoa(p: PessoaResponseDto) {
+    if (loading) return;
+
+    const ok = window.confirm(
+      `Deseja realmente excluir a pessoa "${p.nome}" (ID ${p.id})?`
+    );
+    if (!ok) return;
+
+    try {
+      setError(null);
+      await deletarPessoa(p.id);
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erro ao excluir pessoa");
+    }
   }
 
   return (
@@ -131,8 +148,8 @@ export default function PessoasPage() {
                       <button
                         className="btn danger"
                         onClick={(e) => {
-                          e.stopPropagation(); // evita abrir edit ao clicar no botão
-                          onDeletePessoa(p.id);
+                          e.stopPropagation();
+                          void onDeletePessoa(p);
                         }}
                       >
                         Excluir
@@ -159,11 +176,6 @@ export default function PessoasPage() {
             </tbody>
           </table>
         </div>
-
-        {/* Dica visual opcional */}
-        {/* <div className="footerHint">
-          Dica: dê duplo clique em uma pessoa para editar.
-        </div> */}
       </div>
     </div>
   );

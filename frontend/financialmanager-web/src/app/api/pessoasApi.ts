@@ -61,3 +61,17 @@ export async function updatePessoa(id: number, dto: PessoaUpdateDto): Promise<vo
   });
   if (!res.ok) throw new Error(await parseError(res));
 }
+
+export async function deletarPessoa(id: number): Promise<void> {
+  const res = await fetch(`${BASE_URL}/api/Pessoa/${id}`, {
+    method: "DELETE",
+    headers: {
+      accept: "*/*",
+    },
+  });
+
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    throw new Error(txt || `Erro ao excluir pessoa (HTTP ${res.status})`);
+  }
+}
