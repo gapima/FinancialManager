@@ -35,6 +35,16 @@ builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("frontend", policy =>
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+    );
+});
+
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -44,6 +54,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("frontend");
 app.UseHttpsRedirection();
 app.MapControllers();
 app.Run();
