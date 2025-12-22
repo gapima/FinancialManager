@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import "./PessoasPage.css";
 import { listarPessoas, type PessoaResponseDto } from "../app/api/pessoasApi";
-import PessoaCreateModal from "../components/PessoaCreateModal";
+import PessoaFormModal from "../components/PessoaFormModal";
 
 export default function PessoasPage() {
   const [search, setSearch] = useState("");
@@ -10,6 +10,9 @@ export default function PessoasPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [createOpen, setCreateOpen] = useState(false);
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [selectedPessoa, setSelectedPessoa] = useState<PessoaResponseDto | null>(null);
 
   async function load() {
     try {
@@ -38,12 +41,29 @@ export default function PessoasPage() {
     alert(`Em breve: DELETE pessoa id=${id}`);
   }
 
+  function openEdit(p: PessoaResponseDto) {
+    setSelectedPessoa(p);
+    setEditOpen(true);
+  }
+
   return (
     <div className="page">
-      <PessoaCreateModal
+      {/* CREATE */}
+      <PessoaFormModal
         open={createOpen}
+        mode="create"
         onClose={() => setCreateOpen(false)}
-        onCreated={load}
+        onSaved={load}
+      />
+
+      {/* UPDATE */}
+      <PessoaFormModal
+        open={editOpen}
+        mode="update"
+        pessoaId={selectedPessoa?.id}
+        initialPessoa={selectedPessoa ?? undefined}
+        onClose={() => setEditOpen(false)}
+        onSaved={load}
       />
 
       <div className="pageHeader">
@@ -60,7 +80,6 @@ export default function PessoasPage() {
         </div>
       </div>
 
-      {/* resto igual */}
       <div className="card">
         <div className="toolbar">
           <div className="field">
@@ -83,11 +102,7 @@ export default function PessoasPage() {
           </div>
         </div>
 
-        {error && (
-          <div style={{ padding: 12, color: "#ffb4b4" }}>
-            {error}
-          </div>
-        )}
+        {error && <div style={{ padding: 12, color: "#ffb4b4" }}>{error}</div>}
 
         <div className="tableWrap">
           <table className="table">
@@ -103,12 +118,23 @@ export default function PessoasPage() {
               {!loading &&
                 !error &&
                 filtered.map((p) => (
-                  <tr key={p.id}>
+                  <tr
+                    key={p.id}
+                    onDoubleClick={() => openEdit(p)}
+                    title="Duplo clique para editar"
+                    style={{ cursor: "pointer" }}
+                  >
                     <td className="mono">{p.id}</td>
                     <td className="name">{p.nome}</td>
                     <td>{p.idade}</td>
                     <td style={{ textAlign: "right" }}>
-                      <button className="btn danger" onClick={() => onDeletePessoa(p.id)}>
+                      <button
+                        className="btn danger"
+                        onClick={(e) => {
+                          e.stopPropagation(); // evita abrir edit ao clicar no botão
+                          onDeletePessoa(p.id);
+                        }}
+                      >
                         Excluir
                       </button>
                     </td>
@@ -134,8 +160,9 @@ export default function PessoasPage() {
           </table>
         </div>
 
+        {/* Dica visual opcional */}
         {/* <div className="footerHint">
-          * Próximo passo: ligar DELETE /api/Pessoa/{id}.
+          Dica: dê duplo clique em uma pessoa para editar.
         </div> */}
       </div>
     </div>

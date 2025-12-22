@@ -1,32 +1,45 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Modal from "./ModalPessoa";
-import { criarPessoa, type PessoaCreateDto } from "../app/api/pessoasApi";
+import {
+  criarPessoa,
+  updatePessoa,
+  getPessoaById,
+  type PessoaCreateDto,
+  type PessoaResponseDto,
+  type PessoaUpdateDto,
+} from "../app/api/pessoasApi";
+
+type Mode = "create" | "update";
 
 type Props = {
   open: boolean;
+  mode: Mode;
+  pessoaId?: number; // obrigatório no update
+  initialPessoa?: PessoaResponseDto; // opcional (se você já tem na lista)
   onClose: () => void;
-  onCreated: () => void; // chama reload na page
+  onSaved: () => void; // reload
 };
 
-export default function PessoaCreateModal({ open, onClose, onCreated }: Props) {
+export default function PessoaFormModal({
+  open,
+  mode,
+  pessoaId,
+  initialPessoa,
+  onClose,
+  onSaved,
+}: Props) {
   const [nome, setNome] = useState("");
   const [idade, setIdade] = useState<string>("");
 
   const [saving, setSaving] = useState(false);
-
-  // erro "da API" (ex.: 500, validação no back, etc.)
   const [error, setError] = useState<string | null>(null);
-
-  // alerta "do form" (campos não preenchidos/ inválidos)
   const [alert, setAlert] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const idadeNumber = useMemo(() => {
     const n = Number(idade);
     return Number.isFinite(n) ? n : NaN;
   }, [idade]);
-
-  const canSave =
-    nome.trim().length > 0 && Number.isFinite(idadeNumber) && idadeNumber >= 0 && !saving;
 
   function validate(): string | null {
     const nomeOk = nome.trim().length > 0;
@@ -38,39 +51,88 @@ export default function PessoaCreateModal({ open, onClose, onCreated }: Props) {
     return null;
   }
 
+  function handleIdadeChange(value: string) {
+    if (value === "" || /^\d+$/.test(value)) {
+      setIdade(value);
+      setAlert(null);
+      setError(null);
+    }
+  }
+
+  // ✅ quando abrir no modo update, preencher campos
+  useEffect(() => {
+    if (!open) return;
+
+    setError(null);
+    setAlert(null);
+
+    if (mode === "create") {
+      setNome("");
+      setIdade("");
+      return;
+    }
+
+    // update:
+    const id = pessoaId ?? initialPessoa?.id;
+    if (!id) {
+      setError("PessoaId não informado para atualização.");
+      return;
+    }
+
+    // Se já veio da lista, preenche sem chamar GET
+    if (initialPessoa) {
+      setNome(initialPessoa.nome ?? "");
+      setIdade(String(initialPessoa.idade ?? ""));
+      return;
+    }
+
+    // Opcional: buscar no backend
+    (async () => {
+      try {
+        setLoading(true);
+        const p = await getPessoaById(id);
+        setNome(p.nome ?? "");
+        setIdade(String(p.idade ?? ""));
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Erro ao carregar pessoa");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [open, mode, pessoaId, initialPessoa]);
+
   async function onSubmit() {
     if (saving) return;
 
-    // limpa mensagens anteriores
     setError(null);
     setAlert(null);
 
     const validationMessage = validate();
     if (validationMessage) {
       setAlert(validationMessage);
-      return; // ⛔ não chama a API
+      return;
     }
 
     try {
       setSaving(true);
 
-      const payload: PessoaCreateDto = {
-        nome: nome.trim(),
-        idade: idadeNumber,
-      };
-
-      await criarPessoa(payload);
-
-      // limpa e fecha
-      setNome("");
-      setIdade("");
-      setAlert(null);
-      setError(null);
+      if (mode === "create") {
+        const payload: PessoaCreateDto = { nome: nome.trim(), idade: idadeNumber };
+        await criarPessoa(payload);
+      } else {
+        const id = pessoaId ?? initialPessoa?.id;
+        if (!id) {
+          setError("PessoaId não informado para atualização.");
+          return;
+        }
+        const payload: PessoaUpdateDto = { nome: nome.trim(), idade: idadeNumber };
+        await updatePessoa(id, payload);
+      }
 
       onClose();
-      onCreated();
+      onSaved();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erro ao criar pessoa");
+      setError(e instanceof Error ? e.message : "Erro ao salvar pessoa");
     } finally {
       setSaving(false);
     }
@@ -83,34 +145,25 @@ export default function PessoaCreateModal({ open, onClose, onCreated }: Props) {
     onClose();
   }
 
-  function handleIdadeChange(value: string) {
-    // permite vazio (pra usuário apagar) ou dígitos apenas
-    if (value === "" || /^\d+$/.test(value)) {
-      setIdade(value);
-      setAlert(null);
-      setError(null);
-    }
-  }
+  const title = mode === "create" ? "Adicionar pessoa" : "Editar pessoa";
 
   return (
     <Modal
       open={open}
-      title="Adicionar pessoa"
+      title={title}
       onClose={onCancel}
       footer={
         <>
           <button className="btn" onClick={onCancel} disabled={saving}>
             Cancelar
           </button>
-          {/* ✅ botão clicável pra poder mostrar alerta; só trava quando está salvando */}
-          <button className="btn primary" onClick={onSubmit} disabled={saving}>
-            {saving ? "Salvando..." : "Salvar"}
+          <button className="btn primary" onClick={onSubmit} disabled={saving || loading}>
+            {loading ? "Carregando..." : saving ? "Salvando..." : "Salvar"}
           </button>
         </>
       }
     >
       <div style={{ display: "grid", gap: 12 }}>
-        {/* ✅ ALERTA DE VALIDAÇÃO DO FORM (ANTES DOS INPUTS) */}
         {alert && (
           <div
             style={{
@@ -137,7 +190,7 @@ export default function PessoaCreateModal({ open, onClose, onCreated }: Props) {
             }}
             placeholder="Ex: Gabriel"
             autoFocus
-            disabled={saving}
+            disabled={saving || loading}
           />
         </div>
 
@@ -148,15 +201,11 @@ export default function PessoaCreateModal({ open, onClose, onCreated }: Props) {
             onChange={(e) => handleIdadeChange(e.target.value)}
             inputMode="numeric"
             placeholder="Ex: 18"
-            disabled={saving}
+            disabled={saving || loading}
           />
         </div>
 
-        {/* ✅ ERRO DA API (FICA EMBAIXO) */}
         {error && <div style={{ color: "#ffb4b4", fontSize: 13 }}>{error}</div>}
-
-        {/* opcional: dica visual do canSave (se quiser) */}
-        {/* {!canSave && !saving && <div style={{ color: "#aaa", fontSize: 12 }}>Preencha Nome e Idade para salvar.</div>} */}
       </div>
     </Modal>
   );
