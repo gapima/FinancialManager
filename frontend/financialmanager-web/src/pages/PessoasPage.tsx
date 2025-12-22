@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import "./PessoasPage.css";
 import { listarPessoas, type PessoaResponseDto } from "../app/api/pessoasApi";
+import PessoaCreateModal from "../components/PessoaCreateModal";
 
 export default function PessoasPage() {
   const [search, setSearch] = useState("");
   const [rows, setRows] = useState<PessoaResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [createOpen, setCreateOpen] = useState(false);
 
   async function load() {
     try {
@@ -31,30 +34,33 @@ export default function PessoasPage() {
     return rows.filter((p) => p.nome.toLowerCase().includes(q));
   }, [rows, search]);
 
-  function onAddPessoa() {
-    alert("Em breve: adicionar pessoa");
-  }
-
   function onDeletePessoa(id: number) {
     alert(`Em breve: DELETE pessoa id=${id}`);
   }
 
   return (
     <div className="page">
+      <PessoaCreateModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onCreated={load}
+      />
+
       <div className="pageHeader">
         <div>
           <div className="breadcrumb">Cadastros / Pessoas</div>
           <h1>Pessoas</h1>
-          <p className="subtitle">Lista vindo da API (GET /api/pessoa).</p>
+          <p className="subtitle">Lista vindo da API (GET /api/Pessoa).</p>
         </div>
 
         <div className="headerActions">
-          <button className="btn primary" onClick={onAddPessoa}>
+          <button className="btn primary" onClick={() => setCreateOpen(true)}>
             + Adicionar pessoa
           </button>
         </div>
       </div>
 
+      {/* resto igual */}
       <div className="card">
         <div className="toolbar">
           <div className="field">
@@ -80,9 +86,6 @@ export default function PessoasPage() {
         {error && (
           <div style={{ padding: 12, color: "#ffb4b4" }}>
             {error}
-            <div style={{ marginTop: 8, color: "#bdbdbd", fontSize: 12 }}>
-              Dica: confira se a API está rodando e se o VITE_API_URL está correto.
-            </div>
           </div>
         )}
 
@@ -132,7 +135,7 @@ export default function PessoasPage() {
         </div>
 
         {/* <div className="footerHint">
-          * Próximo passo: ligar DELETE /api/pessoa/{id} e depois modal de Create.
+          * Próximo passo: ligar DELETE /api/Pessoa/{id}.
         </div> */}
       </div>
     </div>

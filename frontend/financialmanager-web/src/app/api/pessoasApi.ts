@@ -1,4 +1,4 @@
-import { apiGet } from "../lib/apiClient";
+import { apiGet, apiPost } from "../lib/apiClient";
 
 export type PessoaResponseDto = {
   id: number;
@@ -6,7 +6,15 @@ export type PessoaResponseDto = {
   idade: number;
 };
 
+export type PessoaCreateDto = {
+  nome: string;
+  idade: number;
+};
+
 export async function listarPessoas(): Promise<PessoaResponseDto[]> {
-  // Ajuste aqui se sua rota for diferente
-  return apiGet<PessoaResponseDto[]>("/api/pessoa");
+  return apiGet<PessoaResponseDto[]>("/api/Pessoa");
+}
+
+export async function criarPessoa(dto: PessoaCreateDto): Promise<PessoaResponseDto> {
+  return apiPost<PessoaResponseDto, PessoaCreateDto>("/api/Pessoa", dto);
 }
