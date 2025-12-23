@@ -167,12 +167,6 @@ export default function TransacoesPage() {
                   <div className="txBottom">
                     <div className="txAmount">{formatBRL(valor)}</div>
                     <div className="txDate">{data}</div>
-
-                    <div className="txActions">
-                      <button className="btn danger" onClick={() => onDeleteTransaction(t.id)}>
-                        Excluir
-                      </button>
-                    </div>
                   </div>
                 </div>
               );

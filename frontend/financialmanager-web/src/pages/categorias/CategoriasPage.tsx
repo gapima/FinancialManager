@@ -169,18 +169,6 @@ export default function CategoriasPage() {
                         <span style={{ opacity: 0.75 }}> ({c.purpose})</span>
                       </span>
                     </div>
-
-                    <div className="catActions">
-                      <button
-                        className="btn danger"
-                        onClick={(e) => {
-                          e.stopPropagation(); // não abre modal de edição
-                          void onDeleteCategory(c);
-                        }}
-                      >
-                        Excluir
-                      </button>
-                    </div>
                   </div>
                 </div>
               );
