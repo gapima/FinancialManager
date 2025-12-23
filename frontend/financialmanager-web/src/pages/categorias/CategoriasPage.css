@@ -1,0 +1,102 @@
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+}
+
+.catCard {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 16px;
+
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.catLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.catTitle {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.catId {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.catMeta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(0, 140, 255, 0.15);
+  border: 1px solid rgba(0, 140, 255, 0.25);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.catActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.catCard.selectable {
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+  outline: none;
+}
+
+.catCard.selectable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  border-color: rgba(120, 140, 255, 0.35);
+}
+
+.catCard.selectable:focus-visible {
+  box-shadow: 0 0 0 2px rgba(120, 140, 255, 0.55);
+}
+
+.catCard.selectable.selected {
+  border-color: rgba(120, 140, 255, 0.55);
+  box-shadow: 0 0 0 1px rgba(120, 140, 255, 0.35), 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.catCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.catLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+}
+
+.catRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.catActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
