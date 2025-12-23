@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import "./CategoriasPage.css";
-import { listarCategorias, type CategoryResponseDto } from "../../api/categoryApi";
+import {
+  deletarCategoria,
+  listarCategorias,
+  type CategoryResponseDto,
+} from "../../api/categoryApi";
 import CategoryFormModal from "../../components/categoria/CategoryFormModal";
 
 type Finalidade = 1 | 2 | 3;
@@ -57,8 +61,22 @@ export default function CategoriasPage() {
     setEditOpen(true);
   }
 
-  function onDeleteCategory(id: number) {
-    alert(`Em breve: DELETE categoria id=${id}`);
+  async function onDeleteCategory(cat: CategoryResponseDto) {
+    const ok = window.confirm(
+      `Tem certeza que deseja excluir a categoria "${cat.description}"?`
+    );
+    if (!ok) return;
+
+    try {
+      setError(null);
+      await deletarCategoria(cat.id);
+      await load();
+    } catch (e) {
+      // mantém padrão do app (mensagem na tela) e também alerta rápido
+      const msg = e instanceof Error ? e.message : "Erro ao excluir categoria";
+      setError(msg);
+      alert(msg);
+    }
   }
 
   return (
@@ -156,8 +174,8 @@ export default function CategoriasPage() {
                       <button
                         className="btn danger"
                         onClick={(e) => {
-                          e.stopPropagation();
-                          onDeleteCategory(c.id);
+                          e.stopPropagation(); // não abre modal de edição
+                          void onDeleteCategory(c);
                         }}
                       >
                         Excluir
