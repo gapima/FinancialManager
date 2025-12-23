@@ -3,6 +3,7 @@ import { AppLayout } from "./components/Layout/AppLayout";
 import DashboardPage from "./pages/Dashboard/DashboardPage";
 import PessoasPage from "./pages/pessoas/PessoasPage";
 import CategoriasPage from "./pages/categorias/CategoriasPage";
+import TransacoesPage from "./pages/transacoes/TransacoesPage";
 
 export default function App() {
   return (
@@ -12,7 +13,7 @@ export default function App() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/pessoas" element={<PessoasPage />} />
           <Route path="/categorias" element={<CategoriasPage />} />
-          <Route path="/transacoes" element={<div style={{ color: "#fff" }}>Transações (em breve)</div>} />
+          <Route path="/transacoes" element={<TransacoesPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
