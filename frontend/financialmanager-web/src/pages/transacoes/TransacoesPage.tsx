@@ -5,6 +5,8 @@ import { listarTransacoes, type TransactionResponseDto } from "../../api/transac
 import { listarPessoas, type PessoaResponseDto } from "../../api/pessoasApi";
 import { listarCategorias, type CategoryResponseDto } from "../../api/categoryApi";
 
+import TransactionFormModal from "../../components/transacao/TransactionFormModal";
+
 type Tipo = 1 | 2;
 function tipoLabel(type: number) {
   switch (type as Tipo) {
@@ -22,7 +24,7 @@ function formatBRL(value: number) {
 }
 
 function parseAmount(amount: string): number {
-  // tenta lidar com "10", "10.50", "10,50"
+  // tenta lidar com "10", "10.50", "10,50", "1.234,56"
   const normalized = amount.replace(/\./g, "").replace(",", ".");
   const n = Number(normalized);
   return Number.isFinite(n) ? n : 0;
@@ -36,6 +38,8 @@ export default function TransacoesPage() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [createOpen, setCreateOpen] = useState(false);
 
   async function load() {
     try {
@@ -85,11 +89,18 @@ export default function TransacoesPage() {
   }
 
   function onCreateTransaction() {
-    alert("Em breve: modal de criação de transação");
+    setCreateOpen(true);
   }
 
   return (
     <div className="page">
+      {/* Modal: Criar Transação */}
+      <TransactionFormModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onCreated={load}
+      />
+
       <div className="pageHeader">
         <div>
           <div className="breadcrumb">Movimento / Transações</div>
@@ -138,9 +149,7 @@ export default function TransacoesPage() {
               const valor = parseAmount(t.amount);
               const labelTipo = tipoLabel(t.type);
 
-              const data = t.createdAt
-                ? new Date(t.createdAt).toLocaleString("pt-BR")
-                : "-";
+              const data = t.createdAt ? new Date(t.createdAt).toLocaleString("pt-BR") : "-";
 
               return (
                 <div className="txCard" key={t.id}>
@@ -160,10 +169,7 @@ export default function TransacoesPage() {
                     <div className="txDate">{data}</div>
 
                     <div className="txActions">
-                      <button
-                        className="btn danger"
-                        onClick={() => onDeleteTransaction(t.id)}
-                      >
+                      <button className="btn danger" onClick={() => onDeleteTransaction(t.id)}>
                         Excluir
                       </button>
                     </div>

@@ -5,18 +5,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* ✅ permite rolar quando o modal for alto */
+  overflow: auto;
+
+  /* ✅ dá espaço pra não colar nas bordas */
   padding: 16px;
+
   z-index: 9999;
 }
 
 .modal{
   width: 100%;
-  max-width: 520px;
+  max-width: 50%;
   background: #1f1f1f;
   border: 1px solid rgba(255,255,255,.12);
   border-radius: 12px;
   box-shadow: 0 24px 60px rgba(0,0,0,.45);
-  overflow: hidden;
+
+  /* ✅ evita cortar e permite scroll interno */
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+
+  /* ✅ garante que padding/borda não “estoure” */
+  box-sizing: border-box;
 }
 
 .modalHeader{
@@ -25,6 +37,12 @@
   justify-content:space-between;
   padding: 14px 16px;
   border-bottom: 1px solid rgba(255,255,255,.08);
+
+  /* ✅ fica visível ao rolar */
+  position: sticky;
+  top: 0;
+  background: #1f1f1f;
+  z-index: 1;
 }
 
 .modalHeader h2{
@@ -51,4 +69,10 @@
   display:flex;
   justify-content:flex-end;
   gap: 10px;
+
+  /* ✅ fica visível ao rolar */
+  position: sticky;
+  bottom: 0;
+  background: #1f1f1f;
+  z-index: 1;
 }
