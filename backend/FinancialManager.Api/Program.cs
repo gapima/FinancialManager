@@ -24,6 +24,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IPessoaService, PessoaService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(PessoaProfile).Assembly);
@@ -34,6 +35,7 @@ builder.Services.AddAutoMapper(typeof(TransactionProfile).Assembly);
 builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 
 builder.Services.AddCors(options =>
 {

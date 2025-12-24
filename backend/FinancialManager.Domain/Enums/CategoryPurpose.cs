@@ -2,7 +2,7 @@
 
 public enum CategoryPurpose
 {
-    Expense = 1,
-    Income = 2,
-    Both = 3
+    Receita = 1,
+    Despesa = 2,
+    Ambas = 3
 }
