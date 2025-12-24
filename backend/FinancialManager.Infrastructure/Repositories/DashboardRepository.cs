@@ -17,8 +17,6 @@ public sealed class DashboardRepository : IDashboardRepository
 
     public async Task<List<TotaisPorPessoaItemDto>> GetTotaisPorPessoaAsync(CancellationToken ct = default)
     {
-        // Importante: isso pressupõe que Transaction.Amount é DECIMAL no banco/entidade.
-        // Se ainda for string, veja o bloco "OBS Amount string" no final.
         var query =
             from p in _context.Pessoas.AsNoTracking()
             join t in _context.Transactions.AsNoTracking() on p.Id equals t.PessoaId into tx
@@ -28,7 +26,7 @@ public sealed class DashboardRepository : IDashboardRepository
                 PessoaNome = p.Nome,
                 TotalReceitas = tx.Where(x => x.Type == TransactionType.Receita).Sum(x => (decimal?)x.Amount) ?? 0m,
                 TotalDespesas = tx.Where(x => x.Type == TransactionType.Despesa).Sum(x => (decimal?)x.Amount) ?? 0m,
-                Saldo = 0m // calcula depois
+                Saldo = 0m
             };
 
         var items = await query.ToListAsync(ct);
@@ -41,7 +39,6 @@ public sealed class DashboardRepository : IDashboardRepository
 
     public async Task<List<TotaisPorCategoriaItemDto>> GetTotaisPorCategoriaAsync(CancellationToken ct = default)
     {
-        // Ajuste nomes: _db.Categories / _db.Transactions conforme seu DbSet
         var query =
             from c in _context.Categories.AsNoTracking()
             join t in _context.Transactions.AsNoTracking()
@@ -62,7 +59,6 @@ public sealed class DashboardRepository : IDashboardRepository
 
         var items = await query.ToListAsync(ct);
 
-        // calcula saldo por item
         foreach (var i in items)
             i.Saldo = i.TotalReceitas - i.TotalDespesas;
 
