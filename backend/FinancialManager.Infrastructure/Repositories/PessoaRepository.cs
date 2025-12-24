@@ -24,7 +24,7 @@ public sealed class PessoaRepository : IPessoaRepository
     private readonly AppDbContext _context;
 
     /// <summary>
-    /// Constrói o repositório de Pessoa com o DbContext injetado via DI.
+    /// Constrói o repositório de Pessoa com o DbContext injetado via DI. 
     /// </summary>
     /// <param name="context">Contexto EF Core responsável pelo acesso ao banco.</param>
     public PessoaRepository(AppDbContext context)
