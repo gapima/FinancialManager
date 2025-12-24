@@ -16,10 +16,6 @@ namespace FinancialManager.Api.Controllers;
  *   - null/false -> NotFound (ou BadRequest dependendo da regra)
  *   - sucesso -> Ok / Created / NoContent
  *
- * Nota importante:
- * - A deleção de Category pode falhar por integridade referencial:
- *   Category vinculada a Transactions está com DeleteBehavior.Restrict no DbContext,
- *   então o banco impede remoção nesses casos.
  */
 [ApiController]
 [Route("api/[controller]")]
