@@ -3,7 +3,7 @@ using FinancialManager.Domain.Entities;
 using FinancialManager.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinancialManager.Infrastructure.Repository;
+namespace FinancialManager.Infrastructure.Repositories;
 
 /*
  * Projeto: FinancialManager
