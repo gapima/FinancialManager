@@ -74,3 +74,48 @@
   justify-content: flex-end;
   align-items: center;
 }
+/* toolbar dos filtros */
+.toolbar{
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;             /* permite quebrar linha */
+}
+
+/* garante largura mínima pros campos e quebra legal */
+.toolbar .field{
+  min-width: 220px;
+  flex: 1;                     /* campos ocupam espaço */
+}
+
+/* bloco da direita (botões + chip) */
+.toolbarRight{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-left: auto;           /* empurra pra direita */
+  flex-wrap: wrap;             /* se faltar espaço, quebra */
+  justify-content: flex-end;
+}
+
+/* evita o texto do botão quebrar em 2 linhas */
+.toolbarRight .btn{
+  white-space: nowrap;
+}
+
+/* opcional: chip não “amassar” */
+.toolbarRight .chip{
+  white-space: nowrap;
+}
+
+/* só pra TransacoesPage, se quiser */
+.toolbar .field:first-child{
+  flex: 2;          /* Buscar fica maior */
+  min-width: 260px;
+}
+
+.toolbar .field:nth-child(2),
+.toolbar .field:nth-child(3){
+  flex: 1;
+  min-width: 180px; /* De/Até menores */
+}

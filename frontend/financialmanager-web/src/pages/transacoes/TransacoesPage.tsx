@@ -30,8 +30,23 @@ function parseAmount(amount: string): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+function toStartOfDay(d: Date) {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  return x;
+}
+
+function toEndOfDay(d: Date) {
+  const x = new Date(d);
+  x.setHours(23, 59, 59, 999);
+  return x;
+}
+
 export default function TransacoesPage() {
   const [search, setSearch] = useState("");
+  const [dateFrom, setDateFrom] = useState<string>(""); // yyyy-mm-dd
+  const [dateTo, setDateTo] = useState<string>(""); // yyyy-mm-dd
+
   const [rows, setRows] = useState<TransactionResponseDto[]>([]);
   const [pessoas, setPessoas] = useState<PessoaResponseDto[]>([]);
   const [cats, setCats] = useState<CategoryResponseDto[]>([]);
@@ -46,11 +61,7 @@ export default function TransacoesPage() {
       setLoading(true);
       setError(null);
 
-      const [tx, ps, cs] = await Promise.all([
-        listarTransacoes(),
-        listarPessoas(),
-        listarCategorias(),
-      ]);
+      const [tx, ps, cs] = await Promise.all([listarTransacoes(), listarPessoas(), listarCategorias()]);
 
       setRows(tx);
       setPessoas(ps);
@@ -80,13 +91,28 @@ export default function TransacoesPage() {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return rows;
-    return rows.filter((t) => t.description?.toLowerCase().includes(q));
-  }, [rows, search]);
 
-  function onDeleteTransaction(id: number) {
-    alert(`Em breve: DELETE transação id=${id}`);
-  }
+    const from = dateFrom ? toStartOfDay(new Date(dateFrom)) : null;
+    const to = dateTo ? toEndOfDay(new Date(dateTo)) : null;
+
+    return rows.filter((t) => {
+      // texto
+      const okText = !q || (t.description ?? "").toLowerCase().includes(q);
+
+      // data
+      let okDate = true;
+      if (from || to) {
+        if (!t.createdAt) okDate = false;
+        else {
+          const dt = new Date(t.createdAt);
+          if (from && dt < from) okDate = false;
+          if (to && dt > to) okDate = false;
+        }
+      }
+
+      return okText && okDate;
+    });
+  }, [rows, search, dateFrom, dateTo]);
 
   function onCreateTransaction() {
     setCreateOpen(true);
@@ -95,11 +121,7 @@ export default function TransacoesPage() {
   return (
     <div className="page">
       {/* Modal: Criar Transação */}
-      <TransactionFormModal
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        onCreated={load}
-      />
+      <TransactionFormModal open={createOpen} onClose={() => setCreateOpen(false)} onCreated={load} />
 
       <div className="pageHeader">
         <div>
@@ -127,13 +149,39 @@ export default function TransacoesPage() {
             />
           </div>
 
+          <div className="field">
+            <label>De</label>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="field">
+            <label>Até</label>
+            <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} disabled={loading} />
+          </div>
+
           <div className="toolbarRight">
             <button className="btn" onClick={load} disabled={loading}>
               Recarregar
             </button>
-            <span className="chip">
-              {loading ? "Carregando..." : `${filtered.length} resultado(s)`}
-            </span>
+
+            <button
+              className="btn"
+              onClick={() => {
+                setSearch("");
+                setDateFrom("");
+                setDateTo("");
+              }}
+              disabled={loading}
+            >
+              Limpar filtros
+            </button>
+
+            <span className="chip">{loading ? "Carregando..." : `${filtered.length} resultado(s)`}</span>
           </div>
         </div>
 
@@ -172,9 +220,7 @@ export default function TransacoesPage() {
               );
             })}
 
-          {!loading && !error && filtered.length === 0 && (
-            <div className="empty">Nenhuma transação encontrada.</div>
-          )}
+          {!loading && !error && filtered.length === 0 && <div className="empty">Nenhuma transação encontrada.</div>}
 
           {loading && <div className="empty">Carregando...</div>}
         </div>
