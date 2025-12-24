@@ -1,145 +1,182 @@
-# 📊 FinancialManager API
+# FinancialManager
 
-API REST para gerenciamento financeiro pessoal, permitindo o controle de **pessoas**, **categorias**, **transações financeiras** e a visualização de **dashboards consolidados** (receitas, despesas e saldo).
+Aplicação **full stack** para gerenciamento financeiro pessoal, composta por **Front-end (React + Vite)** e **Back-end (.NET 9 Web API)**.
 
-O projeto foi desenvolvido com foco em **organização de camadas**, **boas práticas**, **legibilidade** e **facilidade de manutenção**, priorizando regras de negócio no back-end.
-
----
-
-## 🧱 Arquitetura
-
-O projeto segue uma arquitetura em camadas bem definida:
-
-FinancialManager.Api
-FinancialManager.Application
-FinancialManager.Domain
-FinancialManager.Infrastructure
-FinancialManager.Tests
-
-
-
-### 🔹 Api
-Responsável por:
-- Expor endpoints REST
-- Traduzir resultados do Service em respostas HTTP
-- Configuração do pipeline (middlewares, CORS, Swagger)
-
-Controllers são **finos**, delegando regras para a camada Application.
+O projeto foi estruturado com foco em **organização**, **separação clara de responsabilidades**, **boas práticas de arquitetura** e **facilidade de avaliação técnica**, com regras de negócio bem definidas e código documentado.
 
 ---
 
-### 🔹 Application
-Camada responsável por:
-- Regras de negócio
-- Validações de entrada
-- Orquestração de casos de uso
-- Definição de contratos (Interfaces)
-- DTOs de entrada e saída
-- Mapeamentos (AutoMapper)
+## 🧰 Tecnologias e Ferramentas Utilizadas
 
-> Nenhuma regra de negócio fica no controller ou no front-end.
+### Front-end
+- **React**
+- **Vite**
+- **TypeScript**
+- **Node.js v20.19.0**
 
----
-
-### 🔹 Domain
-Contém:
-- Entidades centrais (`Pessoa`, `Category`, `Transaction`)
-- Enums de domínio (`TransactionType`, `CategoryPurpose`, etc.)
-
-Essa camada é **agnóstica de infraestrutura**.
+### Back-end
+- **.NET 9**
+- **ASP.NET Web API**
+- **Entity Framework Core (EF Core)**
+- **AutoMapper**
+- **SQLite** (banco de dados)
 
 ---
 
-### 🔹 Infrastructure
-Responsável por:
-- Persistência de dados (Entity Framework Core + SQLite)
-- Implementação dos repositórios
-- Consultas agregadas para o Dashboard
+## 📁 Estrutura de Pastas – Front-end
 
-Consultas de leitura utilizam `AsNoTracking()` para melhor performance.
+**Caminho:** `frontend/financialmanager-web`
 
----
+```text
+frontend/financialmanager-web
+ ├─ node_modules/
+ ├─ public/
+ ├─ src/
+ │   ├─ api/                 # Comunicação com o back-end (HTTP / fetch)
+ │   │   ├─ categoryApi.ts
+ │   │   ├─ dashboardApi.ts
+ │   │   ├─ pessoasApi.ts
+ │   │   └─ transacoesApi.ts
+ │   │
+ │   ├─ app/                 # Configurações globais / providers
+ │   ├─ assets/              # Assets estáticos
+ │   │
+ │   ├─ components/          # Componentes reutilizáveis organizados por domínio
+ │   │   ├─ categoria/
+ │   │   ├─ Layout/
+ │   │   ├─ Modal/
+ │   │   ├─ pessoa/
+ │   │   └─ transacao/
+ │   │
+ │   ├─ lib/                 # Helpers e utilitários compartilhados
+ │   │   └─ apiClient.ts
+ │   │
+ │   ├─ pages/               # Páginas da aplicação (feature-based)
+ │   │   ├─ categorias/
+ │   │   ├─ Dashboard/
+ │   │   ├─ pessoas/
+ │   │   └─ transacoes/
+ │   │
+ │   ├─ App.tsx              # Componente raiz / layout principal
+ │   ├─ main.tsx             # Bootstrap da aplicação React (Vite)
+ │   ├─ App.css
+ │   └─ index.css
+ │
+ ├─ package.json
+ ├─ vite.config.ts
+ └─ .env
+```
 
-## 🗄️ Banco de Dados
+### 📌 Observações de Arquitetura (Front-end)
 
-- **SQLite**
-- Mapeamento via Entity Framework Core
-- Relacionamentos:
-  - Pessoa → Transactions (**Cascade**)
-  - Category → Transactions (**Restrict**)
-
-> Categorias não podem ser removidas se existirem transações vinculadas, garantindo integridade referencial.
-
----
-
-## 🔄 Funcionalidades
-
-### ✔ Pessoas
-- CRUD completo
-- Validações de dados no back-end
-
-### ✔ Categorias
-- CRUD completo
-- Validação de enums de propósito
-- Proteção contra exclusão indevida (Restrict)
-
-### ✔ Transações
-- CRUD completo
-- Validação de:
-  - Campos obrigatórios
-  - Existência de Pessoa e Categoria
-- `CreatedAt` controlado exclusivamente pelo servidor (UTC)
-
-### ✔ Dashboard
-Consultas agregadas:
-- Totais por Pessoa
-- Totais por Categoria
-- Total geral consolidado (Receitas, Despesas e Saldo)
-
-> Todos os cálculos são feitos no servidor para evitar inconsistências no front-end.
-
----
-
-## 📈 Dashboard – Decisões Técnicas
-
-- Agregações feitas no banco usando `GroupBy` e projeção direta para DTOs
-- Uso de `LEFT JOIN` para incluir Pessoas/Categorias sem transações
-- `Sum` com nullable (`decimal?`) para evitar erros quando não há registros
-- Saldo calculado como:  
-  **Receitas − Despesas**
+- A pasta `api/` centraliza todas as chamadas HTTP, evitando `fetch` espalhado pela UI.
+- A pasta `pages/` representa as telas da aplicação.
+- A pasta `components/` contém componentes reutilizáveis, organizados por domínio.
+- Regras de negócio no front-end são aplicadas **apenas para UX**, nunca substituindo validações do back-end.
 
 ---
 
-## 🧪 Tratamento Global de Erros
+## 🚀 Passo a Passo de Uso da Aplicação
 
-O projeto possui um **middleware global de exceções**:
-
-- `ArgumentException` → **400 Bad Request**
-- `KeyNotFoundException` → **404 Not Found**
-- Outras exceções → **500 Internal Server Error**
-
-Formato de erro padronizado usando **ProblemDetails (RFC 7807)**, incluindo `traceId` para facilitar debug.
+Este guia descreve o fluxo recomendado para utilização da aplicação após subir o **front-end** e o **back-end**.
 
 ---
 
-## 🌐 CORS
+## ▶️ Como Executar o Front-end
 
-CORS configurado para permitir comunicação com o front-end em ambiente de desenvolvimento:
+### 1️⃣ Acesse a pasta do front-end
 
+```bash
+cd frontend\financialmanager-web
+```
+
+### 2️⃣ Instale as dependências
+
+```bash
+npm i
+```
+
+### 3️⃣ Inicie o servidor de desenvolvimento
+
+```bash
+npm run dev
+```
+
+### ℹ️ Observações Importantes
+
+- O front-end consome a API a partir da variável de ambiente:
+
+```env
+VITE_API_URL
+```
+
+- Caso a variável não esteja definida, a aplicação utiliza um fallback para ambiente local.
+- Por padrão, o front-end ficará disponível em:
+
+```text
 http://localhost:5173
-
-
----
-
-## 📚 Swagger
-
-Swagger disponível em ambiente de desenvolvimento para exploração e testes dos endpoints.
+```
 
 ---
 
-## 🚀 Execução do Projeto
+## ▶️ Como Executar o Back-end
+
+### 1️⃣ Acesse a pasta do back-end
+
+```bash
+cd backend
+```
+
+### 2️⃣ Restaure os pacotes
 
 ```bash
 dotnet restore
+```
+
+### 3️⃣ Aplique as migrations (SQLite)
+
+```bash
 dotnet ef database update
+```
+
+### 4️⃣ Execute a API
+
+```bash
 dotnet run
+```
+
+### ℹ️ Observações
+
+- A API sobe em ambiente local com suporte a **Swagger** (em `Development`).
+- O banco de dados utilizado é **SQLite**, via **EF Core**.
+
+---
+
+## 📁 Estrutura de Pastas – Back-end
+
+A solução do back-end está organizada em projetos separados por responsabilidade, seguindo uma **arquitetura em camadas**.
+
+```text
+backend/
+ ├─ FinancialManager.Api/
+ ├─ FinancialManager.Application/
+ ├─ FinancialManager.Domain/
+ ├─ FinancialManager.Infrastructure/
+ └─ FinancialManager.Tests/
+```
+
+---
+
+## 🧱 Camadas do Back-end (Visão Geral)
+
+### 🔹 FinancialManager.Api (Apresentação)
+Responsável por expor os endpoints HTTP (REST), com controllers finos e pipeline configurado com Swagger, CORS e middlewares.
+
+### 🔹 FinancialManager.Application (Regras / Casos de Uso)
+Centraliza regras de negócio, validações, DTOs e orquestração.
+
+### 🔹 FinancialManager.Domain (Núcleo do Domínio)
+Entidades e enums independentes de infraestrutura.
+
+### 🔹 FinancialManager.Infrastructure (Persistência)
+EF Core, migrations SQLite e repositórios.
