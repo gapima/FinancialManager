@@ -21,4 +21,11 @@ public sealed class DashboardController : ControllerBase
         var dto = await _service.GetTotaisPorPessoaAsync(ct);
         return Ok(dto);
     }
+
+    [HttpGet("totais-por-categoria")]
+    public async Task<IActionResult> GetTotaisPorCategoria(CancellationToken ct)
+    {
+        var dto = await _service.GetTotaisPorCategoriaAsync(ct);
+        return Ok(dto);
+    }
 }

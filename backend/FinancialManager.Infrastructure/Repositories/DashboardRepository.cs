@@ -38,4 +38,36 @@ public sealed class DashboardRepository : IDashboardRepository
 
         return items;
     }
+
+    public async Task<List<TotaisPorCategoriaItemDto>> GetTotaisPorCategoriaAsync(CancellationToken ct = default)
+    {
+        // Ajuste nomes: _db.Categories / _db.Transactions conforme seu DbSet
+        var query =
+            from c in _context.Categories.AsNoTracking()
+            join t in _context.Transactions.AsNoTracking()
+                on c.Id equals t.CategoryId into tx
+            select new TotaisPorCategoriaItemDto
+            {
+                CategoryId = c.Id,
+                CategoryDescription = c.Description,
+
+                TotalReceitas = tx
+                    .Where(x => x.Type == TransactionType.Receita)
+                    .Sum(x => (decimal?)x.Amount) ?? 0m,
+
+                TotalDespesas = tx
+                    .Where(x => x.Type == TransactionType.Despesa)
+                    .Sum(x => (decimal?)x.Amount) ?? 0m,
+            };
+
+        var items = await query.ToListAsync(ct);
+
+        // calcula saldo por item
+        foreach (var i in items)
+            i.Saldo = i.TotalReceitas - i.TotalDespesas;
+
+        return items
+            .OrderBy(x => x.CategoryDescription)
+            .ToList();
+    }
 }

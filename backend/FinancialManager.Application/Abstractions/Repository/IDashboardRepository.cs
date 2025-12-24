@@ -5,4 +5,5 @@ namespace FinancialManager.Application.Abstractions.Repository;
 public interface IDashboardRepository
 {
     Task<List<TotaisPorPessoaItemDto>> GetTotaisPorPessoaAsync(CancellationToken ct = default);
+    Task<List<TotaisPorCategoriaItemDto>> GetTotaisPorCategoriaAsync(CancellationToken ct = default);
 }

@@ -31,4 +31,22 @@ public sealed class DashboardService : IDashboardService
             }
         };
     }
+    public async Task<DashboardTotaisPorCategoriaDto> GetTotaisPorCategoriaAsync(CancellationToken ct = default)
+    {
+        var items = await _repo.GetTotaisPorCategoriaAsync(ct);
+
+        var totalReceitas = items.Sum(x => x.TotalReceitas);
+        var totalDespesas = items.Sum(x => x.TotalDespesas);
+
+        return new DashboardTotaisPorCategoriaDto
+        {
+            Items = items,
+            TotalGeral = new TotaisGeralDto
+            {
+                TotalReceitas = totalReceitas,
+                TotalDespesas = totalDespesas,
+                Saldo = totalReceitas - totalDespesas
+            }
+        };
+    }
 }
