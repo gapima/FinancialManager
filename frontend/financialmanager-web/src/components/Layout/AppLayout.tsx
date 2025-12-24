@@ -32,11 +32,6 @@ export function AppLayout() {
             <span className="sep">/</span>
             <span>Totais por pessoa</span>
           </div>
-
-          <div className="topbarActions">
-            <button className="btn btnGhost">Exportar</button>
-            <button className="btn btnPrimary">Nova transação</button>
-          </div>
         </header>
 
         <section className="content">
