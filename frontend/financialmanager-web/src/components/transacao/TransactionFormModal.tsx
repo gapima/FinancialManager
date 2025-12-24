@@ -1,3 +1,41 @@
+/*
+ * Projeto: FinancialManager
+ * Camada: Front-end (UI / Regras de UX)
+ * Componente: TransactionFormModal
+ *
+ * Responsabilidade:
+ * - Exibir um modal para criação de transações financeiras.
+ * - Aplicar regras de negócio no front-end para melhorar a experiência do usuário,
+ *   evitando seleções inválidas antes do envio ao back-end.
+ *
+ * Regras de negócio aplicadas no front (UX):
+ *
+ * 1) Regra de maioridade:
+ *    - Pessoas menores de 18 anos NÃO podem cadastrar transações do tipo Receita.
+ *    - Para menores de 18:
+ *      - O tipo é automaticamente travado como "Despesa".
+ *      - Apenas categorias com finalidade "Despesa" ou "Ambos" são exibidas.
+ *
+ * 2) Regra por finalidade da categoria:
+ *    - Categoria Receita   -> Tipo travado como Receita.
+ *    - Categoria Despesa   -> Tipo travado como Despesa.
+ *    - Categoria Ambos     -> Usuário pode escolher Receita ou Despesa.
+ *
+ * 3) Consistência Pessoa ↔ Categoria ↔ Tipo:
+ *    - Alterar Pessoa limpa Categoria e Tipo.
+ *    - Alterar Categoria pode ajustar automaticamente o Tipo.
+ *    - Se uma combinação inválida for detectada, o formulário se auto-corrige.
+ *
+ * 4) Validação de valores:
+ *    - Valor deve ser numérico e maior que zero.
+ *    - Aceita vírgula ou ponto no input (normalizado antes do envio).
+ *    - O valor é enviado como string para manter compatibilidade com o back-end.
+ *
+ * Observação importante:
+ * - Todas essas regras também são validadas no back-end.
+ * - O front apenas antecipa validações para melhor UX, não substitui a regra de negócio.
+ */
+
 import { useEffect, useMemo, useState } from "react";
 import Modal from "../Modal/BaseModal";
 import { listarPessoas, type PessoaResponseDto } from "../../api/pessoasApi";
